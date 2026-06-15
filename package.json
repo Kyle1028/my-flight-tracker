@@ -1,0 +1,24 @@
+{
+  "name": "flight-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test_api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kyle1028/my-flight-tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Kyle1028/my-flight-tracker/issues"
+  },
+  "homepage": "https://github.com/Kyle1028/my-flight-tracker#readme",
+  "dependencies": {
+    "ioredis": "^5.11.1"
+  }
+}

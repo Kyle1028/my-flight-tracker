@@ -1,26 +1,25 @@
+const Redis = require('ioredis');
+
 export default async function handler(req, res) {
-    const kvUrl = process.env.KV_REST_API_URL;
-    const kvToken = process.env.KV_REST_API_TOKEN;
+    const redisUrl = process.env.REDIS_URL;
     const lineToken = process.env.LINE_CHANNEL_ACCESS_TOKEN;
     const lineUserId = process.env.LINE_USER_ID;
 
-    if (!kvUrl || !kvToken || !lineToken || !lineUserId) {
-        return res.status(500).json({ error: 'Missing KV or LINE Tokens' });
+    if (!redisUrl || !lineToken || !lineUserId) {
+        return res.status(500).json({ error: 'Missing REDIS or LINE Tokens' });
     }
 
     try {
         // 1. Get current track
-        const getRes = await fetch(`${kvUrl}/get/current_track`, {
-            headers: { Authorization: `Bearer ${kvToken}` }
-        });
-        const getData = await getRes.json();
+        const redis = new Redis(redisUrl);
+        const getData = await redis.get('current_track');
+        redis.disconnect();
         
-        if (!getData.result) {
+        if (!getData) {
             return res.status(200).json({ message: 'No flight being tracked.' });
         }
 
-        let track = getData.result;
-        if (typeof track === 'string') track = JSON.parse(track);
+        let track = typeof getData === 'string' ? JSON.parse(getData) : getData;
 
         // 2. Fetch SerpApi
         const SERP_API_KEY = process.env.SERPAPI_KEY || "8c13e91561e822cd82870a20d66060d8f89f41a4adf8a2ffabdad520566f39f9";
