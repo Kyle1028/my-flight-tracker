@@ -140,13 +140,16 @@
         }
 
         .flight-inputs {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
             gap: 16px;
             margin-bottom: 40px;
         }
 
         .input-box {
+            flex: 1;
+            min-width: 200px;
             position: relative;
             display: flex;
             align-items: center;
@@ -155,6 +158,34 @@
             border-radius: 16px;
             padding: 12px 20px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .swap-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
+            backdrop-filter: blur(8px);
+        }
+
+        .swap-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            transform: rotate(180deg);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .swap-btn:active {
+            transform: rotate(180deg) scale(0.9);
         }
 
         .input-box:focus-within {
@@ -402,31 +433,48 @@
                 </div>
             </div>
 
+            <datalist id="airport-list">
+                <option value="TPE">台北 (TPE)</option>
+                <option value="TSA">台北松山 (TSA)</option>
+                <option value="KHH">高雄 (KHH)</option>
+                <option value="RMQ">台中 (RMQ)</option>
+                <option value="NRT">東京成田 (NRT)</option>
+                <option value="HND">東京羽田 (HND)</option>
+                <option value="KIX">大阪關西 (KIX)</option>
+                <option value="FUK">福岡 (FUK)</option>
+                <option value="OKA">沖繩 (OKA)</option>
+                <option value="CTS">札幌 (CTS)</option>
+                <option value="ICN">首爾仁川 (ICN)</option>
+                <option value="GMP">首爾金浦 (GMP)</option>
+                <option value="PUS">釜山 (PUS)</option>
+                <option value="BKK">曼谷 (BKK)</option>
+                <option value="SIN">新加坡 (SIN)</option>
+                <option value="HKG">香港 (HKG)</option>
+                <option value="LHR">倫敦 (LHR)</option>
+                <option value="CDG">巴黎 (CDG)</option>
+                <option value="JFK">紐約 (JFK)</option>
+                <option value="LAX">洛杉磯 (LAX)</option>
+                <option value="SFO">舊金山 (SFO)</option>
+            </datalist>
+
             <div class="flight-inputs">
                 <div class="input-box">
                     <span class="material-symbols-outlined">flight_takeoff</span>
                     <div class="input-wrapper">
                         <label>出發地 Origin</label>
-                        <select id="departure">
-                            <option value="TPE" selected>台北 (TPE)</option>
-                            <option value="TSA">台北松山 (TSA)</option>
-                            <option value="KHH">高雄 (KHH)</option>
-                        </select>
+                        <input type="text" id="departure" list="airport-list" value="TPE" placeholder="例如 TPE" style="text-transform: uppercase;" maxlength="3" autocomplete="off">
                     </div>
                 </div>
+
+                <button class="swap-btn" onclick="swapAirports()" title="互換出發地與目的地">
+                    <span class="material-symbols-outlined">sync_alt</span>
+                </button>
                 
                 <div class="input-box">
                     <span class="material-symbols-outlined">flight_land</span>
                     <div class="input-wrapper">
                         <label>目的地 Destination</label>
-                        <select id="arrival">
-                            <option value="FUK" selected>福岡 (FUK)</option>
-                            <option value="NRT">東京成田 (NRT)</option>
-                            <option value="HND">東京羽田 (HND)</option>
-                            <option value="KIX">大阪關西 (KIX)</option>
-                            <option value="OKA">沖繩 (OKA)</option>
-                            <option value="CTS">札幌 (CTS)</option>
-                        </select>
+                        <input type="text" id="arrival" list="airport-list" value="NRT" placeholder="例如 NRT" style="text-transform: uppercase;" maxlength="3" autocomplete="off">
                     </div>
                 </div>
 
@@ -539,6 +587,14 @@
             } else {
                 returnGroup.style.display = 'flex';
             }
+        }
+
+        function swapAirports() {
+            const depInput = document.getElementById('departure');
+            const arrInput = document.getElementById('arrival');
+            const temp = depInput.value;
+            depInput.value = arrInput.value;
+            arrInput.value = temp;
         }
 
         async function searchFlight() {
