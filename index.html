@@ -119,12 +119,12 @@
 
                 <div class="input-group">
                     <span class="material-symbols-outlined">calendar_today</span>
-                    <input type="date" id="outbound" value="2026-01-13">
+                    <input type="date" id="outbound">
                 </div>
 
                 <div class="input-group" id="returnGroup">
                     <span class="material-symbols-outlined">calendar_today</span>
-                    <input type="date" id="return" value="2026-01-19">
+                    <input type="date" id="return">
                 </div>
             </div>
 
@@ -142,30 +142,57 @@
                 <span class="material-symbols-outlined" style="font-size: 32px; color: #1a73e8;">airlines</span>
                 <span id="airline">航空公司名稱</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 24px;">
+            <div style="display: flex; align-items: center; gap: 16px;">
                 <div class="price-info">
                     <div class="price" id="price">NT$ --</div>
                     <div style="font-size: 12px; color: #5f6368; margin-top: 4px;">含稅與手續費</div>
                 </div>
-                <a id="bookingBtn" href="#" target="_blank" style="background-color: #1a73e8; color: white; padding: 10px 20px; border-radius: 24px; text-decoration: none; font-size: 15px; font-weight: 500; display: none; box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3);">前往購買</a>
+                <button id="trackBtn" onclick="trackFlight()" style="background-color: #34a853; color: white; border: none; padding: 10px 20px; border-radius: 24px; font-size: 15px; font-weight: 500; display: none; cursor: pointer; box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3); transition: 0.2s;">🔔 追蹤價格</button>
+                <a id="bookingBtn" href="#" target="_blank" style="background-color: #1a73e8; color: white; padding: 10px 20px; border-radius: 24px; text-decoration: none; font-size: 15px; font-weight: 500; display: none; box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3); transition: 0.2s;">前往購買</a>
             </div>
         </div>
     </div>
 
     <script>
-        // 設定預設日期為明天與下週，避免因為日期在過去而無法搜尋
-        window.onload = function() {
-            const today = new Date();
-            
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            
-            const nextWeek = new Date(today);
-            nextWeek.setDate(nextWeek.getDate() + 7);
-            
-            document.getElementById('outbound').value = tomorrow.toISOString().split('T')[0];
-            document.getElementById('return').value = nextWeek.toISOString().split('T')[0];
-        };
+
+        async function trackFlight() {
+            const trackBtn = document.getElementById('trackBtn');
+            trackBtn.innerText = '設定中...';
+            trackBtn.disabled = true;
+
+            const payload = {
+                departure: document.getElementById('departure').value,
+                arrival: document.getElementById('arrival').value,
+                outbound: document.getElementById('outbound').value,
+                return_date: document.getElementById('return').value,
+                type: document.getElementById('tripType').value,
+                adults: document.getElementById('adults').value,
+                travel_class: document.getElementById('travelClass').value,
+            };
+
+            try {
+                const response = await fetch('/api/track', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('成功加入追蹤！每天早上 8 點會自動發送最低價格至 Line。');
+                    trackBtn.innerText = '✅ 已追蹤';
+                    trackBtn.style.backgroundColor = '#5f6368';
+                } else {
+                    alert('追蹤失敗：' + (data.error || '未知錯誤'));
+                    trackBtn.innerText = '🔔 追蹤價格';
+                    trackBtn.disabled = false;
+                }
+            } catch (e) {
+                alert('追蹤失敗，請檢查網路連線');
+                trackBtn.innerText = '🔔 追蹤價格';
+                trackBtn.disabled = false;
+            }
+        }
 
         function toggleReturnDate() {
             const tripType = document.getElementById('tripType').value;
@@ -193,6 +220,15 @@
             const airlineEl = document.getElementById('airline');
             const bookingBtn = document.getElementById('bookingBtn');
 
+            if (!outbound) {
+                alert('請選擇出發日期！');
+                return;
+            }
+            if (tripType === '1' && !returnDate) {
+                alert('請選擇回程日期！');
+                return;
+            }
+
             resultCard.style.display = 'none';
             loading.style.display = 'block';
             loading.innerText = '正在搜尋最佳航班組合...';
@@ -219,6 +255,12 @@
                     } else {
                         bookingBtn.style.display = 'none';
                     }
+
+                    const trackBtn = document.getElementById('trackBtn');
+                    trackBtn.style.display = 'inline-block';
+                    trackBtn.innerText = '🔔 追蹤價格';
+                    trackBtn.style.backgroundColor = '#34a853';
+                    trackBtn.disabled = false;
                     
                     resultCard.style.display = 'flex';
                 } else if (data.error_message) {
