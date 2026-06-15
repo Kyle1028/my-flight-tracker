@@ -1,10 +1,11 @@
 export default async function handler(req, res) {
     const kvUrl = process.env.KV_REST_API_URL;
     const kvToken = process.env.KV_REST_API_TOKEN;
-    const lineToken = process.env.LINE_NOTIFY_TOKEN;
+    const lineToken = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+    const lineUserId = process.env.LINE_USER_ID;
 
-    if (!kvUrl || !kvToken || !lineToken) {
-        return res.status(500).json({ error: 'Missing KV or LINE Token' });
+    if (!kvUrl || !kvToken || !lineToken || !lineUserId) {
+        return res.status(500).json({ error: 'Missing KV or LINE Tokens' });
     }
 
     try {
@@ -49,19 +50,26 @@ export default async function handler(req, res) {
             const airline = cheapestFlight.flights[0].airline;
             const booking_url = data.search_metadata ? data.search_metadata.google_flights_url : null;
 
-            // 3. Send Line Notify
-            const message = `\n✈️ 航班價格通知\n${track.departure} ➡️ ${track.arrival}\n日期: ${track.outbound} ${track.type === '1' ? `~ ${track.return_date}` : ''}\n💰 最低價格: NT$ ${price.toLocaleString()}\n航空公司: ${airline}\n🔗 立即查看/購買:\n${booking_url}`;
+            // 3. Send via LINE Messaging API
+            const messageText = `✈️ 航班價格通知\n${track.departure} ➡️ ${track.arrival}\n日期: ${track.outbound} ${track.type === '1' ? `~ ${track.return_date}` : ''}\n💰 最低價格: NT$ ${price.toLocaleString()}\n航空公司: ${airline}\n🔗 立即查看/購買:\n${booking_url}`;
 
-            const params = new URLSearchParams();
-            params.append('message', message);
+            const linePayload = {
+                to: lineUserId,
+                messages: [
+                    {
+                        type: 'text',
+                        text: messageText
+                    }
+                ]
+            };
 
-            const lineRes = await fetch('https://notify-api.line.me/api/notify', {
+            const lineRes = await fetch('https://api.line.me/v2/bot/message/push', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${lineToken}`
                 },
-                body: params
+                body: JSON.stringify(linePayload)
             });
 
             if (!lineRes.ok) {
