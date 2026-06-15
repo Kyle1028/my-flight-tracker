@@ -27,17 +27,20 @@ export default async function handler(req, res) {
         }
 
         // Google Flights 有時會把票放在 best_flights，有時在 other_flights
+        const booking_url = data.search_metadata ? data.search_metadata.google_flights_url : null;
         if (data.best_flights && data.best_flights.length > 0) {
             const bestFlight = data.best_flights[0];
             res.status(200).json({
                 price: bestFlight.price,
-                airline: bestFlight.flights[0].airline
+                airline: bestFlight.flights[0].airline,
+                booking_url
             });
         } else if (data.other_flights && data.other_flights.length > 0) {
             const otherFlight = data.other_flights[0];
             res.status(200).json({
                 price: otherFlight.price,
-                airline: otherFlight.flights[0].airline
+                airline: otherFlight.flights[0].airline,
+                booking_url
             });
         } else {
             res.status(200).json({ error_message: "目前此日期或航線真的查無合適航班。" });

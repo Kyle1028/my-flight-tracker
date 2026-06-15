@@ -142,9 +142,12 @@
                 <span class="material-symbols-outlined" style="font-size: 32px; color: #1a73e8;">airlines</span>
                 <span id="airline">航空公司名稱</span>
             </div>
-            <div class="price-info">
-                <div class="price" id="price">NT$ --</div>
-                <div style="font-size: 12px; color: #5f6368; margin-top: 4px;">含稅與手續費</div>
+            <div style="display: flex; align-items: center; gap: 24px;">
+                <div class="price-info">
+                    <div class="price" id="price">NT$ --</div>
+                    <div style="font-size: 12px; color: #5f6368; margin-top: 4px;">含稅與手續費</div>
+                </div>
+                <a id="bookingBtn" href="#" target="_blank" style="background-color: #1a73e8; color: white; padding: 10px 20px; border-radius: 24px; text-decoration: none; font-size: 15px; font-weight: 500; display: none; box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3);">前往購買</a>
             </div>
         </div>
     </div>
@@ -188,6 +191,7 @@
             const loading = document.getElementById('loading');
             const priceEl = document.getElementById('price');
             const airlineEl = document.getElementById('airline');
+            const bookingBtn = document.getElementById('bookingBtn');
 
             resultCard.style.display = 'none';
             loading.style.display = 'block';
@@ -208,6 +212,14 @@
                 if (data.price) {
                     priceEl.innerText = `NT$ ${data.price.toLocaleString()}`;
                     airlineEl.innerText = data.airline;
+                    
+                    if (data.booking_url) {
+                        bookingBtn.href = data.booking_url;
+                        bookingBtn.style.display = 'inline-block';
+                    } else {
+                        bookingBtn.style.display = 'none';
+                    }
+                    
                     resultCard.style.display = 'flex';
                 } else if (data.error_message) {
                     // 🔥 新增：把後端傳來的真實錯誤顯示在畫面上
