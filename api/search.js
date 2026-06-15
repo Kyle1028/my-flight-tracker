@@ -1,7 +1,9 @@
 export default async function handler(req, res) {
     const { departure, arrival, outbound, return_date, type, adults, travel_class } = req.query;
-    // 加入您提供的 API Key 作為備用（Vercel 環境變數若沒設定，就使用此 Key）
-    const API_KEY = process.env.SERPAPI_KEY || "8c13e91561e822cd82870a20d66060d8f89f41a4adf8a2ffabdad520566f39f9";
+    // 支援多組 API Key (以逗號分隔)，隨機挑選一組來分攤額度
+    const envKeys = process.env.SERPAPI_KEY || "8c13e91561e822cd82870a20d66060d8f89f41a4adf8a2ffabdad520566f39f9";
+    const keysArray = envKeys.split(',').map(k => k.trim()).filter(k => k);
+    const API_KEY = keysArray[Math.floor(Math.random() * keysArray.length)];
 
     if (!API_KEY) {
         return res.status(500).json({ error_message: "伺服器未設定 API Key" });

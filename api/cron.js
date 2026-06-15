@@ -31,7 +31,9 @@ export default async function handler(req, res) {
             return date.toISOString().split('T')[0];
         };
 
-        const SERP_API_KEY = process.env.SERPAPI_KEY || "8c13e91561e822cd82870a20d66060d8f89f41a4adf8a2ffabdad520566f39f9";
+        const envKeys = process.env.SERPAPI_KEY || "8c13e91561e822cd82870a20d66060d8f89f41a4adf8a2ffabdad520566f39f9";
+        const keysArray = envKeys.split(',').map(k => k.trim()).filter(k => k);
+        const SERP_API_KEY = keysArray[Math.floor(Math.random() * keysArray.length)];
         
         let overallCheapestFlight = null;
         let overallCheapestPrice = Infinity;
