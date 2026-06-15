@@ -150,6 +150,20 @@
     </div>
 
     <script>
+        // 設定預設日期為明天與下週，避免因為日期在過去而無法搜尋
+        window.onload = function() {
+            const today = new Date();
+            
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const nextWeek = new Date(today);
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            
+            document.getElementById('outbound').value = tomorrow.toISOString().split('T')[0];
+            document.getElementById('return').value = nextWeek.toISOString().split('T')[0];
+        };
+
         function toggleReturnDate() {
             const tripType = document.getElementById('tripType').value;
             const returnGroup = document.getElementById('returnGroup');
@@ -195,9 +209,13 @@
                     priceEl.innerText = `NT$ ${data.price.toLocaleString()}`;
                     airlineEl.innerText = data.airline;
                     resultCard.style.display = 'flex';
+                } else if (data.error_message) {
+                    // 🔥 新增：把後端傳來的真實錯誤顯示在畫面上
+                    loading.style.display = 'block';
+                    loading.innerText = `⚠️ ${data.error_message}`;
                 } else {
                     loading.style.display = 'block';
-                    loading.innerText = '目前此日期或航線查無合適航班。';
+                    loading.innerText = '查詢發生未知的錯誤。';
                 }
             } catch (error) {
                 loading.style.display = 'block';
