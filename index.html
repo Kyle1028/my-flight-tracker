@@ -142,9 +142,17 @@
         .flight-inputs {
             display: flex;
             flex-wrap: wrap;
-            align-items: center;
             gap: 16px;
             margin-bottom: 40px;
+            width: 100%;
+        }
+
+        .location-group, .date-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+            min-width: 300px;
         }
 
         .input-box {
@@ -458,39 +466,43 @@
             </datalist>
 
             <div class="flight-inputs">
-                <div class="input-box">
-                    <span class="material-symbols-outlined">flight_takeoff</span>
-                    <div class="input-wrapper">
-                        <label>出發地 Origin</label>
-                        <input type="text" id="departure" list="airport-list" value="TPE" placeholder="例如 TPE" style="text-transform: uppercase;" maxlength="3" autocomplete="off">
+                <div class="location-group">
+                    <div class="input-box">
+                        <span class="material-symbols-outlined">flight_takeoff</span>
+                        <div class="input-wrapper">
+                            <label>出發地 Origin</label>
+                            <input type="text" id="departure" list="airport-list" value="TPE" placeholder="例如 TPE" style="text-transform: uppercase;" maxlength="3" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <button class="swap-btn" onclick="swapAirports()" title="互換出發地與目的地">
+                        <span class="material-symbols-outlined">sync_alt</span>
+                    </button>
+                    
+                    <div class="input-box">
+                        <span class="material-symbols-outlined">flight_land</span>
+                        <div class="input-wrapper">
+                            <label>目的地 Destination</label>
+                            <input type="text" id="arrival" list="airport-list" value="NRT" placeholder="例如 NRT" style="text-transform: uppercase;" maxlength="3" autocomplete="off">
+                        </div>
                     </div>
                 </div>
 
-                <button class="swap-btn" onclick="swapAirports()" title="互換出發地與目的地">
-                    <span class="material-symbols-outlined">sync_alt</span>
-                </button>
-                
-                <div class="input-box">
-                    <span class="material-symbols-outlined">flight_land</span>
-                    <div class="input-wrapper">
-                        <label>目的地 Destination</label>
-                        <input type="text" id="arrival" list="airport-list" value="NRT" placeholder="例如 NRT" style="text-transform: uppercase;" maxlength="3" autocomplete="off">
+                <div class="date-group">
+                    <div class="input-box">
+                        <span class="material-symbols-outlined">calendar_month</span>
+                        <div class="input-wrapper">
+                            <label>去程日期 Departure</label>
+                            <input type="date" id="outbound">
+                        </div>
                     </div>
-                </div>
 
-                <div class="input-box">
-                    <span class="material-symbols-outlined">calendar_month</span>
-                    <div class="input-wrapper">
-                        <label>去程日期 Departure</label>
-                        <input type="date" id="outbound">
-                    </div>
-                </div>
-
-                <div class="input-box" id="returnGroup">
-                    <span class="material-symbols-outlined">event_upcoming</span>
-                    <div class="input-wrapper">
-                        <label>回程日期 Return</label>
-                        <input type="date" id="return">
+                    <div class="input-box" id="returnGroup">
+                        <span class="material-symbols-outlined">event_upcoming</span>
+                        <div class="input-wrapper">
+                            <label>回程日期 Return</label>
+                            <input type="date" id="return">
+                        </div>
                     </div>
                 </div>
             </div>
