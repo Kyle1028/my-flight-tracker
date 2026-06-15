@@ -141,7 +141,7 @@
 
         .flight-inputs {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 16px;
             margin-bottom: 40px;
             width: 100%;
@@ -149,10 +149,10 @@
 
         .location-group, .date-group {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             gap: 16px;
-            flex: 1;
-            min-width: 300px;
+            width: 100%;
         }
 
         .input-box {
@@ -166,6 +166,7 @@
             border-radius: 16px;
             padding: 12px 20px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-sizing: border-box;
         }
 
         .swap-btn {
