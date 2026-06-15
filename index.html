@@ -76,23 +76,37 @@
                         <option value="2">單程</option>
                     </select>
                 </span>
-                <span>
-                    <span class="material-symbols-outlined">person</span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>成人人數</label>
                     <select id="adults">
                         <option value="1">1 位</option>
                         <option value="2">2 位</option>
                         <option value="3">3 位</option>
                         <option value="4">4 位</option>
                     </select>
-                </span>
-                <span>
+                </div>
+                <div class="form-group">
+                    <label>艙等</label>
                     <select id="travelClass">
                         <option value="1">經濟艙</option>
                         <option value="2">豪華經濟艙</option>
                         <option value="3">商務艙</option>
                         <option value="4">頭等艙</option>
                     </select>
-                </span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>追蹤設定 (彈性日期)</label>
+                <select id="flexDays">
+                    <option value="0">確切日期</option>
+                    <option value="1">前後 1 天 (共查 3 天)</option>
+                    <option value="2">前後 2 天 (共查 5 天)</option>
+                </select>
+                <div style="font-size: 12px; color: #5f6368; margin-top: 4px;">注意：彈性日期僅用於「追蹤價格」排程，不影響立即搜尋結果。選擇前後 2 天會消耗較多免費 API 額度。</div>
             </div>
 
             <div class="input-row">
@@ -154,6 +168,7 @@
     </div>
 
     <script>
+        let currentLowestPrice = null;
 
         async function trackFlight() {
             const trackBtn = document.getElementById('trackBtn');
@@ -168,6 +183,8 @@
                 type: document.getElementById('tripType').value,
                 adults: document.getElementById('adults').value,
                 travel_class: document.getElementById('travelClass').value,
+                flexDays: parseInt(document.getElementById('flexDays').value),
+                lowestPriceSeen: currentLowestPrice
             };
 
             try {
@@ -246,6 +263,7 @@
                 loading.style.display = 'none';
 
                 if (data.price) {
+                    currentLowestPrice = data.price;
                     priceEl.innerText = `NT$ ${data.price.toLocaleString()}`;
                     airlineEl.innerText = data.airline;
                     

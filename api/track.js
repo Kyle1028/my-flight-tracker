@@ -5,7 +5,7 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { departure, arrival, outbound, return_date, type, adults, travel_class } = req.body;
+    const { departure, arrival, outbound, return_date, type, adults, travel_class, flexDays, lowestPriceSeen } = req.body;
 
     const url = process.env.REDIS_URL;
 
@@ -21,6 +21,8 @@ export default async function handler(req, res) {
         type,
         adults,
         travel_class,
+        flexDays: flexDays || 0,
+        lowestPriceSeen: lowestPriceSeen || null,
         timestamp: new Date().toISOString()
     };
 
