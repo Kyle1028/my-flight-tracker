@@ -3,93 +3,387 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>航班搜尋</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Antigravity Flight Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     
     <style>
-        body { font-family: 'Roboto', sans-serif; background-color: #ffffff; color: #202124; margin: 0; padding: 0; }
-        .header { padding: 12px 24px; border-bottom: 1px solid #dadce0; display: flex; align-items: center; gap: 12px; font-size: 22px; color: #5f6368; }
-        .hero-section { background-image: url('https://www.gstatic.com/travel-frontend/animation/hero/flights_nc_4.svg'); background-position: center bottom; background-repeat: no-repeat; padding: 40px 20px 80px 20px; }
-        .search-container { max-width: 1024px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15); padding: 16px 16px 40px 16px; position: relative; }
+        :root {
+            --bg-color: #0f172a;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-primary: #3b82f6;
+            --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            --accent-gradient-hover: linear-gradient(135deg, #0891b2 0%, #2563eb 100%);
+            --success-color: #10b981;
+            --input-bg: rgba(0, 0, 0, 0.2);
+            --input-focus: rgba(59, 130, 246, 0.5);
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg-gradient); 
+            color: var(--text-primary); 
+            margin: 0; 
+            padding: 0; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 隱藏預設捲軸，但保留滾動功能 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+        .header { 
+            padding: 20px 40px; 
+            display: flex; 
+            align-items: center; 
+            gap: 16px; 
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px; 
+            font-weight: 700;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            letter-spacing: 1px;
+        }
+
+        .header .logo-icon {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 32px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: center;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .search-container { 
+            width: 100%;
+            max-width: 1000px; 
+            background: var(--glass-bg); 
+            border: 1px solid var(--glass-border);
+            border-radius: 24px; 
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: 0 24px 48px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1); 
+            padding: 40px; 
+            position: relative; 
+            box-sizing: border-box;
+        }
         
-        .search-options { display: flex; gap: 12px; margin-bottom: 16px; color: #5f6368; font-size: 14px; font-weight: 500; }
-        .search-options span { display: flex; align-items: center; gap: 4px; }
+        .top-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .option-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--input-bg);
+            padding: 6px 16px;
+            border-radius: 100px;
+            border: 1px solid transparent;
+            transition: 0.3s;
+        }
+
+        .option-group:hover {
+            border-color: var(--glass-border);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .option-group .material-symbols-outlined {
+            color: var(--text-secondary);
+            font-size: 20px;
+        }
+
+        .option-group select {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            padding-right: 16px;
+        }
         
-        /* 🔥 新增：讓上方選項在滑鼠移過去時有淺灰色背景，提示使用者可以點擊 */
-        .search-options select { 
+        .option-group select option {
+            background: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        .flight-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .input-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 12px 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-box:focus-within {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 4px var(--input-focus);
+            transform: translateY(-2px);
+        }
+
+        .input-box .material-symbols-outlined {
+            color: var(--accent-primary);
+            font-size: 24px;
+            margin-right: 12px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .input-wrapper label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-box select, .input-box input {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+        }
+
+        .input-box input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            opacity: 0.5;
+            cursor: pointer;
+        }
+
+        .input-box select option {
+            background: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        .search-btn { 
+            position: absolute; 
+            bottom: -28px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: var(--accent-gradient); 
+            color: white; 
             border: none; 
-            background-color: transparent; 
-            font-size: 14px; 
-            font-weight: 500; 
-            color: #5f6368; 
+            border-radius: 100px; 
+            padding: 16px 40px; 
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px; 
+            font-weight: 700; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
             cursor: pointer; 
-            outline: none; 
-            font-family: inherit; 
-            appearance: none; 
-            padding: 6px 24px 6px 8px; 
-            border-radius: 4px;
-            background-image: url("data:image/svg+xml;utf8,<svg fill='%235f6368' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>"); 
-            background-repeat: no-repeat; 
-            background-position: right 4px center; 
-            transition: background-color 0.2s, color 0.2s;
-        }
-        .search-options select:hover { 
-            background-color: #f1f3f4; 
-            color: #202124; 
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5); 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .input-row { display: flex; flex-wrap: wrap; gap: 12px; }
-        .input-group { display: flex; align-items: center; border: 1px solid #dadce0; border-radius: 4px; padding: 10px 14px; flex: 1; min-width: 200px; background: #fff; transition: border-color 0.2s; }
-        .input-group:focus-within { border-color: #1a73e8; border-width: 2px; padding: 9px 13px; }
-        .input-group .material-symbols-outlined { color: #5f6368; margin-right: 12px; font-size: 20px; }
-        
-        .input-group input, .input-group select { border: none; outline: none; font-size: 16px; width: 100%; color: #3c4043; background: transparent; font-family: inherit; cursor: pointer; }
-        .input-group select { appearance: none; background: url("data:image/svg+xml;utf8,<svg fill='%235f6368' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>") no-repeat right; background-position-x: calc(100% - 4px); }
+        .search-btn:hover { 
+            background: var(--accent-gradient-hover); 
+            transform: translateX(-50%) translateY(-4px);
+            box-shadow: 0 20px 30px -10px rgba(59, 130, 246, 0.6); 
+        }
 
-        .search-btn { position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%); background-color: #1a73e8; color: white; border: none; border-radius: 24px; padding: 10px 24px; font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3); transition: 0.2s; }
-        .search-btn:hover { background-color: #1b66c9; box-shadow: 0 2px 6px 0 rgba(60,64,67,0.3); }
-        .results-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        .result-card { display: none; border: 1px solid #dadce0; border-radius: 8px; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; margin-top: 20px; transition: 0.2s; }
-        .result-card:hover { box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3); }
-        .airline-info { display: flex; align-items: center; gap: 16px; font-size: 16px; font-weight: 500; }
-        .price-info { text-align: right; }
-        .price { font-size: 22px; color: #188038; font-weight: 500; }
-        .loading-text { text-align: center; color: #5f6368; margin-top: 20px; display: none; }
+        .search-btn:active {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .results-container { 
+            width: 100%;
+            max-width: 800px; 
+            margin: 60px auto 40px auto; 
+        }
+
+        .result-card { 
+            display: none; 
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border); 
+            border-radius: 20px; 
+            padding: 24px 32px; 
+            justify-content: space-between; 
+            align-items: center; 
+            backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .airline-info { 
+            display: flex; 
+            align-items: center; 
+            gap: 16px; 
+            font-size: 20px; 
+            font-weight: 600; 
+        }
+
+        .airline-info .material-symbols-outlined {
+            color: var(--accent-primary);
+            font-size: 36px;
+            background: rgba(59, 130, 246, 0.1);
+            padding: 12px;
+            border-radius: 16px;
+        }
+
+        .price-info { text-align: right; margin-right: 16px; }
+        .price { 
+            font-family: 'Outfit', sans-serif;
+            font-size: 32px; 
+            color: var(--success-color); 
+            font-weight: 700; 
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            border-radius: 100px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .track-btn {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .track-btn:hover {
+            background: rgba(16, 185, 129, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .book-btn {
+            background: var(--text-primary);
+            color: var(--bg-color);
+        }
+
+        .book-btn:hover {
+            background: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255,255,255,0.2);
+        }
+
+        .loading-text { 
+            text-align: center; 
+            color: var(--text-secondary); 
+            font-size: 16px;
+            display: none; 
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+            100% { opacity: 0.6; }
+        }
+
+        .hint-text {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 16px;
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <span class="material-symbols-outlined">menu</span>
-        <span>✈️ 航班搜尋</span>
+        <span class="material-symbols-outlined logo-icon">travel_explore</span>
+        <span>AeroTrack Pro</span>
     </div>
 
-    <div class="hero-section">
+    <div class="main-content">
+        <div class="hero-title">Find your next journey.</div>
+
         <div class="search-container">
             
-            <div class="search-options">
-                <span>
+            <div class="top-options">
+                <div class="option-group">
                     <span class="material-symbols-outlined">sync_alt</span>
                     <select id="tripType" onchange="toggleReturnDate()">
-                        <option value="1">來回</option>
-                        <option value="2">單程</option>
-                    </select>
-                </span>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>成人人數</label>
-                    <select id="adults">
-                        <option value="1">1 位</option>
-                        <option value="2">2 位</option>
-                        <option value="3">3 位</option>
-                        <option value="4">4 位</option>
+                        <option value="1">來回 (Round trip)</option>
+                        <option value="2">單程 (One way)</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>艙等</label>
+
+                <div class="option-group">
+                    <span class="material-symbols-outlined">person</span>
+                    <select id="adults">
+                        <option value="1">1 位成人</option>
+                        <option value="2">2 位成人</option>
+                        <option value="3">3 位成人</option>
+                        <option value="4">4 位成人</option>
+                    </select>
+                </div>
+
+                <div class="option-group">
+                    <span class="material-symbols-outlined">airline_seat_recline_extra</span>
                     <select id="travelClass">
                         <option value="1">經濟艙</option>
                         <option value="2">豪華經濟艙</option>
@@ -97,72 +391,95 @@
                         <option value="4">頭等艙</option>
                     </select>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label>追蹤設定 (彈性日期)</label>
-                <select id="flexDays">
-                    <option value="0">確切日期</option>
-                    <option value="1">前後 1 天 (共查 3 天)</option>
-                    <option value="2">前後 2 天 (共查 5 天)</option>
-                </select>
-                <div style="font-size: 12px; color: #5f6368; margin-top: 4px;">注意：彈性日期僅用於「追蹤價格」排程，不影響立即搜尋結果。選擇前後 2 天會消耗較多免費 API 額度。</div>
-            </div>
-
-            <div class="input-row">
-                <div class="input-group">
-                    <span class="material-symbols-outlined">flight_takeoff</span>
-                    <select id="departure">
-                        <option value="TPE" selected>台北 (TPE)</option>
-                        <option value="TSA">台北松山 (TSA)</option>
-                        <option value="KHH">高雄 (KHH)</option>
+                <div class="option-group">
+                    <span class="material-symbols-outlined">notifications_active</span>
+                    <select id="flexDays">
+                        <option value="0">確切日期 (追蹤用)</option>
+                        <option value="1">前後 1 天 (追蹤用)</option>
+                        <option value="2">前後 2 天 (追蹤用)</option>
                     </select>
+                </div>
+            </div>
+
+            <div class="flight-inputs">
+                <div class="input-box">
+                    <span class="material-symbols-outlined">flight_takeoff</span>
+                    <div class="input-wrapper">
+                        <label>出發地 Origin</label>
+                        <select id="departure">
+                            <option value="TPE" selected>台北 (TPE)</option>
+                            <option value="TSA">台北松山 (TSA)</option>
+                            <option value="KHH">高雄 (KHH)</option>
+                        </select>
+                    </div>
                 </div>
                 
-                <div class="input-group">
+                <div class="input-box">
                     <span class="material-symbols-outlined">flight_land</span>
-                    <select id="arrival">
-                        <option value="FUK" selected>福岡 (FUK)</option>
-                        <option value="NRT">東京成田 (NRT)</option>
-                        <option value="HND">東京羽田 (HND)</option>
-                        <option value="KIX">大阪關西 (KIX)</option>
-                        <option value="OKA">沖繩 (OKA)</option>
-                        <option value="CTS">札幌 (CTS)</option>
-                    </select>
+                    <div class="input-wrapper">
+                        <label>目的地 Destination</label>
+                        <select id="arrival">
+                            <option value="FUK" selected>福岡 (FUK)</option>
+                            <option value="NRT">東京成田 (NRT)</option>
+                            <option value="HND">東京羽田 (HND)</option>
+                            <option value="KIX">大阪關西 (KIX)</option>
+                            <option value="OKA">沖繩 (OKA)</option>
+                            <option value="CTS">札幌 (CTS)</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="input-group">
-                    <span class="material-symbols-outlined">calendar_today</span>
-                    <input type="date" id="outbound">
+                <div class="input-box">
+                    <span class="material-symbols-outlined">calendar_month</span>
+                    <div class="input-wrapper">
+                        <label>去程日期 Departure</label>
+                        <input type="date" id="outbound">
+                    </div>
                 </div>
 
-                <div class="input-group" id="returnGroup">
-                    <span class="material-symbols-outlined">calendar_today</span>
-                    <input type="date" id="return">
+                <div class="input-box" id="returnGroup">
+                    <span class="material-symbols-outlined">event_upcoming</span>
+                    <div class="input-wrapper">
+                        <label>回程日期 Return</label>
+                        <input type="date" id="return">
+                    </div>
                 </div>
             </div>
 
             <button class="search-btn" onclick="searchFlight()">
                 <span class="material-symbols-outlined">search</span>
-                搜尋
+                探索航班 Explore
             </button>
         </div>
-    </div>
 
-    <div class="results-container">
-        <div id="loading" class="loading-text">正在搜尋最佳航班組合...</div>
-        <div id="resultCard" class="result-card">
-            <div class="airline-info">
-                <span class="material-symbols-outlined" style="font-size: 32px; color: #1a73e8;">airlines</span>
-                <span id="airline">航空公司名稱</span>
+        <div class="results-container">
+            <div id="loading" class="loading-text">
+                <span class="material-symbols-outlined" style="font-size: 48px; margin-bottom: 16px; display: block; color: var(--accent-primary);">satellite_alt</span>
+                正在分析全球航班數據...
             </div>
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <div class="price-info">
-                    <div class="price" id="price">NT$ --</div>
-                    <div style="font-size: 12px; color: #5f6368; margin-top: 4px;">含稅與手續費</div>
+            
+            <div id="resultCard" class="result-card">
+                <div class="airline-info">
+                    <span class="material-symbols-outlined">airlines</span>
+                    <span id="airline">航空公司名稱</span>
                 </div>
-                <button id="trackBtn" onclick="trackFlight()" style="background-color: #34a853; color: white; border: none; padding: 10px 20px; border-radius: 24px; font-size: 15px; font-weight: 500; display: none; cursor: pointer; box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3); transition: 0.2s;">🔔 追蹤價格</button>
-                <a id="bookingBtn" href="#" target="_blank" style="background-color: #1a73e8; color: white; padding: 10px 20px; border-radius: 24px; text-decoration: none; font-size: 15px; font-weight: 500; display: none; box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3); transition: 0.2s;">前往購買</a>
+                <div style="display: flex; align-items: center;">
+                    <div class="price-info">
+                        <div class="price" id="price">NT$ --</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">含稅與手續費 Taxes included</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button id="trackBtn" class="action-btn track-btn" onclick="trackFlight()">
+                            <span class="material-symbols-outlined">notifications</span>
+                            追蹤價格
+                        </button>
+                        <a id="bookingBtn" class="action-btn book-btn" href="#" target="_blank">
+                            前往購買
+                            <span class="material-symbols-outlined" style="font-size: 18px;">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -172,7 +489,8 @@
 
         async function trackFlight() {
             const trackBtn = document.getElementById('trackBtn');
-            trackBtn.innerText = '設定中...';
+            const originalHTML = trackBtn.innerHTML;
+            trackBtn.innerHTML = '<span class="material-symbols-outlined">sync</span> 設定中...';
             trackBtn.disabled = true;
 
             const payload = {
@@ -196,17 +514,19 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    alert('成功加入追蹤！每天早上 8 點會自動發送最低價格至 Line。');
-                    trackBtn.innerText = '✅ 已追蹤';
-                    trackBtn.style.backgroundColor = '#5f6368';
+                    alert('成功加入追蹤！系統將於有更低價時透過 LINE 通知您。');
+                    trackBtn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> 已追蹤';
+                    trackBtn.style.background = 'rgba(255,255,255,0.1)';
+                    trackBtn.style.color = 'var(--text-secondary)';
+                    trackBtn.style.borderColor = 'transparent';
                 } else {
                     alert('追蹤失敗：' + (data.error || '未知錯誤'));
-                    trackBtn.innerText = '🔔 追蹤價格';
+                    trackBtn.innerHTML = originalHTML;
                     trackBtn.disabled = false;
                 }
             } catch (e) {
                 alert('追蹤失敗，請檢查網路連線');
-                trackBtn.innerText = '🔔 追蹤價格';
+                trackBtn.innerHTML = originalHTML;
                 trackBtn.disabled = false;
             }
         }
@@ -248,7 +568,7 @@
 
             resultCard.style.display = 'none';
             loading.style.display = 'block';
-            loading.innerText = '正在搜尋最佳航班組合...';
+            loading.innerHTML = '<span class="material-symbols-outlined" style="font-size: 48px; margin-bottom: 16px; display: block; color: var(--accent-primary);">satellite_alt</span>正在分析全球航班數據...';
 
             try {
                 let url = `/api/search?departure=${departure}&arrival=${arrival}&outbound=${outbound}&type=${tripType}&adults=${adults}&travel_class=${travelClass}`;
@@ -269,29 +589,30 @@
                     
                     if (data.booking_url) {
                         bookingBtn.href = data.booking_url;
-                        bookingBtn.style.display = 'inline-block';
+                        bookingBtn.style.display = 'flex';
                     } else {
                         bookingBtn.style.display = 'none';
                     }
 
                     const trackBtn = document.getElementById('trackBtn');
-                    trackBtn.style.display = 'inline-block';
-                    trackBtn.innerText = '🔔 追蹤價格';
-                    trackBtn.style.backgroundColor = '#34a853';
+                    trackBtn.style.display = 'flex';
+                    trackBtn.innerHTML = '<span class="material-symbols-outlined">notifications</span>追蹤價格';
+                    trackBtn.style.background = 'rgba(16, 185, 129, 0.1)';
+                    trackBtn.style.color = 'var(--success-color)';
+                    trackBtn.style.borderColor = 'rgba(16, 185, 129, 0.3)';
                     trackBtn.disabled = false;
                     
                     resultCard.style.display = 'flex';
                 } else if (data.error_message) {
-                    // 🔥 新增：把後端傳來的真實錯誤顯示在畫面上
                     loading.style.display = 'block';
-                    loading.innerText = `⚠️ ${data.error_message}`;
+                    loading.innerHTML = `<span class="material-symbols-outlined" style="font-size: 48px; margin-bottom: 16px; display: block; color: #ef4444;">error</span>${data.error_message}`;
                 } else {
                     loading.style.display = 'block';
-                    loading.innerText = '查詢發生未知的錯誤。';
+                    loading.innerHTML = `<span class="material-symbols-outlined" style="font-size: 48px; margin-bottom: 16px; display: block; color: #ef4444;">error</span>查詢發生未知的錯誤。`;
                 }
             } catch (error) {
                 loading.style.display = 'block';
-                loading.innerText = '查詢失敗，請檢查網路狀態或稍後再試。';
+                loading.innerHTML = `<span class="material-symbols-outlined" style="font-size: 48px; margin-bottom: 16px; display: block; color: #ef4444;">wifi_off</span>查詢失敗，請檢查網路狀態或稍後再試。`;
                 console.error(error);
             }
         }
