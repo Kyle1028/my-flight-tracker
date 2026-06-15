@@ -28,18 +28,19 @@ export default async function handler(req, res) {
 
         // Google Flights 有時會把票放在 best_flights，有時在 other_flights
         const booking_url = data.search_metadata ? data.search_metadata.google_flights_url : null;
-        if (data.best_flights && data.best_flights.length > 0) {
-            const bestFlight = data.best_flights[0];
+        
+        let allFlights = [];
+        if (data.best_flights) allFlights = allFlights.concat(data.best_flights);
+        if (data.other_flights) allFlights = allFlights.concat(data.other_flights);
+
+        if (allFlights.length > 0) {
+            // 找出價格最低的航班
+            allFlights.sort((a, b) => a.price - b.price);
+            const cheapestFlight = allFlights[0];
+            
             res.status(200).json({
-                price: bestFlight.price,
-                airline: bestFlight.flights[0].airline,
-                booking_url
-            });
-        } else if (data.other_flights && data.other_flights.length > 0) {
-            const otherFlight = data.other_flights[0];
-            res.status(200).json({
-                price: otherFlight.price,
-                airline: otherFlight.flights[0].airline,
+                price: cheapestFlight.price,
+                airline: cheapestFlight.flights[0].airline,
                 booking_url
             });
         } else {
